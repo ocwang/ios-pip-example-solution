@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11198.2" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="81" id="znT-Vh-U5Z" customClass="CommentTableViewCell" customModule="PIPExample" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="81"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="znT-Vh-U5Z" id="qBy-my-MnI">
+                <frame key="frameInset" width="375" height="80"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zV8-2j-W0I">
+                        <color key="backgroundColor" red="0.90196078431372551" green="0.90196078431372551" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="30" id="NEB-ST-mdR"/>
+                            <constraint firstAttribute="width" secondItem="zV8-2j-W0I" secondAttribute="height" multiplier="1:1" id="Q9t-9j-zAf"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Wr-Cc-3Pl">
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="9Wr-Cc-3Pl" secondAttribute="trailing" constant="15" id="D00-4l-jfY"/>
+                    <constraint firstItem="9Wr-Cc-3Pl" firstAttribute="top" secondItem="qBy-my-MnI" secondAttribute="top" constant="15" id="Or7-bb-dHq"/>
+                    <constraint firstItem="9Wr-Cc-3Pl" firstAttribute="leading" secondItem="zV8-2j-W0I" secondAttribute="trailing" constant="10" id="T9O-Fr-Adg"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="9Wr-Cc-3Pl" secondAttribute="bottom" constant="15" id="Z9O-La-73Y"/>
+                    <constraint firstItem="zV8-2j-W0I" firstAttribute="top" secondItem="qBy-my-MnI" secondAttribute="top" constant="15" id="dZE-TK-MYZ"/>
+                    <constraint firstItem="zV8-2j-W0I" firstAttribute="leading" secondItem="qBy-my-MnI" secondAttribute="leading" constant="15" id="hST-SH-HxJ"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="zV8-2j-W0I" secondAttribute="bottom" constant="15" id="oRq-Ik-BMW"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="commentLabel" destination="9Wr-Cc-3Pl" id="6J2-Jx-VnT"/>
+                <outlet property="userPlaceholderView" destination="zV8-2j-W0I" id="B9E-3G-fdZ"/>
+            </connections>
+            <point key="canvasLocation" x="89.5" y="114.5"/>
+        </tableViewCell>
+    </objects>
+</document>
