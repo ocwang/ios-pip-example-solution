@@ -32,6 +32,11 @@ class ContainerViewController: UIViewController {
                        "The 28 Illest Puns From Politicians in 2013",
                        "The 22 Greatest Snapchat Filters From LOST"]
     
+    var videoWidthConstraint: NSLayoutConstraint!
+    var videoTopConstraint: NSLayoutConstraint!
+    var videoLeadingConstraint: NSLayoutConstraint!
+    var detailsViewTopConstraint: NSLayoutConstraint!
+    
     // MARK: - Subviews
     
     @IBOutlet weak var tableView: UITableView!
@@ -48,40 +53,71 @@ class ContainerViewController: UIViewController {
     
     // MARK: - Show/Hide Child VCs
     
+    
     func presentVideo() {
         removeExistingViewControllerIfNeeded()
         
-        videoViewController = VideoViewController()
+        addVideoViewController()
+        addDetailsViewController()
         
-        addChildViewController(videoViewController)
-        let width = view.bounds.width
-        let videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
-        videoViewController.view.frame = CGRect(x: view.bounds.minX,
-                                                y: view.bounds.maxY,
-                                                width: width,
-                                                height: videoHeight)
-        videoViewController.view.addGestureRecognizer(panGesture)
-        view.addSubview(videoViewController.view)
+        view.layoutIfNeeded()
         
-        detailsViewController = DetailsViewController.pip_instantiateFromNib() as! DetailsViewController
-        
-        addChildViewController(detailsViewController)
-        let detailsViewHeight = view.bounds.height - videoHeight
-        detailsViewController.view.frame = CGRect(x: view.bounds.minX,
-                                                  y: view.bounds.maxY,
-                                                  width: width,
-                                                  height: detailsViewHeight)
-        view.addSubview(detailsViewController.view)
+        videoTopConstraint.constant = 0
+        let videoHeight = Utility.heightWithDesiredRatio(forWidth: view.bounds.width)
+        detailsViewTopConstraint.constant = videoHeight
         
         UIView.animate(withDuration: 0.3, animations: {
-            self.videoViewController.view.frame = CGRect(x: 0, y: 0, width: width, height: videoHeight)
-            self.detailsViewController.view.frame = CGRect(x: 0, y: videoHeight, width: width, height: detailsViewHeight)
+            self.view.layoutIfNeeded()
         }) {
             if $0 {
                 self.videoViewController.didMove(toParentViewController: self)
                 self.detailsViewController.didMove(toParentViewController: self)
             }
         }
+    }
+    
+    func addVideoViewController() {
+        videoViewController = VideoViewController()
+        addChildViewController(videoViewController)
+        
+        let videoView = videoViewController.view!
+        videoView.translatesAutoresizingMaskIntoConstraints = false
+        videoView.addGestureRecognizer(panGesture)
+        
+        view.addSubview(videoView)
+        
+        videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio).isActive = true
+        
+        videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: view.bounds.width)
+        videoWidthConstraint.isActive = true
+        
+        videoTopConstraint = videoView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.maxY)
+        videoTopConstraint.isActive = true
+        
+        videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        videoLeadingConstraint.isActive = true
+    }
+    
+    func addDetailsViewController() {
+        detailsViewController = DetailsViewController.pip_instantiateFromNib() as! DetailsViewController
+        addChildViewController(detailsViewController)
+        
+        let detailsView = detailsViewController.view!
+        detailsView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(detailsView)
+        
+        let width = view.bounds.width
+        detailsView.widthAnchor.constraint(equalToConstant: width).isActive = true
+        
+        let videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
+        let detailsViewHeight = view.bounds.height - videoHeight
+        detailsView.heightAnchor.constraint(equalToConstant: detailsViewHeight).isActive = true
+        
+        detailsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.bounds.minX).isActive = true
+        
+        detailsViewTopConstraint = detailsView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.maxY)
+        detailsViewTopConstraint.isActive = true
     }
     
     func removeExistingViewControllerIfNeeded() {
@@ -121,21 +157,19 @@ class ContainerViewController: UIViewController {
         
         if panGesture.state == .began || panGesture.state == .changed {
             hideVideoDetails()
-            
-            let translatedFrame = calculateTranslatedFrame(forPanView: panView,
-                                                           withTranslatedPoint: translatedPoint)
-            panView.frame = translatedFrame
+
+            translate(panView: panView, withTranslatedPoint: translatedPoint)
             panGesture.setTranslation(.zero, in: view)
         } else if panGesture.state == .ended {
             let currentCenterY = panView.center.y + translatedPoint.y
-            let yThreshold = view.bounds.height * 0.5
+            let yThreshold = view.bounds.height * 0.4
             
             let finalPosition: VideoPosition = currentCenterY <= yThreshold ? .top : .bottomRight
             animateVideo(toPosition: finalPosition)
         }
     }
     
-    func calculateTranslatedFrame(forPanView panView: UIView, withTranslatedPoint translatedPoint: CGPoint) -> CGRect {
+    func translate(panView: UIView, withTranslatedPoint translatedPoint: CGPoint) {
         let width = view.bounds.width
         let baseWidth = width * baseWidthRatio
         let topDistance = (panView.center.y + translatedPoint.y) - (Utility.heightWithDesiredRatio(forWidth: baseWidth)/2)
@@ -146,40 +180,45 @@ class ContainerViewController: UIViewController {
         let currentX = (panView.center.x + translatedPoint.x) - (currentWidth/2)
         let currentY = (panView.center.y + translatedPoint.y) - (currentHeight/2)
         
-        return CGRect(x: currentX, y: currentY, width: currentWidth, height: currentHeight)
+        self.videoLeadingConstraint.constant = currentX
+        self.videoTopConstraint.constant = currentY
+        self.videoWidthConstraint.constant = currentWidth
+        
+        view.setNeedsUpdateConstraints()
+        view.layoutIfNeeded()
     }
     
     func animateVideo(toPosition position: VideoPosition) {
         let width = view.bounds.width
-        var videoHeight: CGFloat
-        var videoFrame: CGRect
         var completionHandler: ((Bool) -> Void)?
         
         switch position {
         case .top:
-            videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
-            videoFrame = CGRect(x: 0, y: 0, width: width, height: videoHeight)
+            self.videoLeadingConstraint.constant = 0
+            self.videoTopConstraint.constant = 0
+            self.videoWidthConstraint.constant = width
+            
             completionHandler = {
-                if $0 {
-                    self.showVideoDetails()
-                }
+                if $0 { self.showVideoDetails() }
             }
         case .bottomRight:
             let bottomWidth: CGFloat = width * baseWidthRatio
-            videoHeight = Utility.heightWithDesiredRatio(forWidth: bottomWidth)
+            let videoHeight = Utility.heightWithDesiredRatio(forWidth: bottomWidth)
             let bottomX = width - bottomPadding - bottomWidth
             let bottomY = view.frame.height - bottomPadding - videoHeight
-            videoFrame = CGRect(x: bottomX, y: bottomY, width: bottomWidth, height: videoHeight)
+            
+            self.videoLeadingConstraint.constant = bottomX
+            self.videoTopConstraint.constant = bottomY
+            self.videoWidthConstraint.constant = bottomWidth
+            
             completionHandler = nil
         }
         
-        animateVideo(toFrame: videoFrame, withCompletion: completionHandler)
-    }
-    
-    func animateVideo(toFrame frame: CGRect, withCompletion completion: ((Bool) -> Void)?) {
+        view.setNeedsUpdateConstraints()
+        
         UIView.animate(withDuration: 0.3,
-                       animations: { self.videoViewController.view.frame = frame },
-                       completion: completion)
+                       animations: { self.view.layoutIfNeeded() },
+                       completion: completionHandler)
     }
 }
 
