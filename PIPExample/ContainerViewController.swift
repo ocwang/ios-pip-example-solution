@@ -99,7 +99,7 @@ class ContainerViewController: UIViewController {
     }
     
     func addDetailsViewController() {
-        detailsViewController = DetailsViewController.pip_instantiateFromNib() as! DetailsViewController
+        detailsViewController = DetailsViewController.pip_instantiateFromNib()
         addChildViewController(detailsViewController)
         
         let detailsView = detailsViewController.view!
@@ -180,9 +180,9 @@ class ContainerViewController: UIViewController {
         let currentX = (panView.center.x + translatedPoint.x) - (currentWidth/2)
         let currentY = (panView.center.y + translatedPoint.y) - (currentHeight/2)
         
-        self.videoLeadingConstraint.constant = currentX
-        self.videoTopConstraint.constant = currentY
-        self.videoWidthConstraint.constant = currentWidth
+        videoLeadingConstraint.constant = currentX
+        videoTopConstraint.constant = currentY
+        videoWidthConstraint.constant = currentWidth
         
         view.setNeedsUpdateConstraints()
         view.layoutIfNeeded()
@@ -194,9 +194,9 @@ class ContainerViewController: UIViewController {
         
         switch position {
         case .top:
-            self.videoLeadingConstraint.constant = 0
-            self.videoTopConstraint.constant = 0
-            self.videoWidthConstraint.constant = width
+            videoLeadingConstraint.constant = 0
+            videoTopConstraint.constant = 0
+            videoWidthConstraint.constant = width
             
             completionHandler = {
                 if $0 { self.showVideoDetails() }
@@ -207,9 +207,9 @@ class ContainerViewController: UIViewController {
             let bottomX = width - bottomPadding - bottomWidth
             let bottomY = view.frame.height - bottomPadding - videoHeight
             
-            self.videoLeadingConstraint.constant = bottomX
-            self.videoTopConstraint.constant = bottomY
-            self.videoWidthConstraint.constant = bottomWidth
+            videoLeadingConstraint.constant = bottomX
+            videoTopConstraint.constant = bottomY
+            videoWidthConstraint.constant = bottomWidth
             
             completionHandler = nil
         }

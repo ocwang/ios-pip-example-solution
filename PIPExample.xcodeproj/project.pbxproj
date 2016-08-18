@@ -18,7 +18,7 @@
 		CAE567651D64F07F00D791DE /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE567641D64F07F00D791DE /* VideoTableViewCell.swift */; };
 		CAE567671D64F61600D791DE /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE567661D64F61600D791DE /* UIColorExtensions.swift */; };
 		CAE5676C1D64FA0B00D791DE /* DetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CAE5676B1D64FA0B00D791DE /* DetailsViewController.xib */; };
-		CAE5676E1D64FA5200D791DE /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE5676D1D64FA5200D791DE /* UIViewControllerExtensions.swift */; };
+		CAE5676E1D64FA5200D791DE /* NSObjectExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE5676D1D64FA5200D791DE /* NSObjectExtensions.swift */; };
 		CAE567701D64FDA800D791DE /* CommentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = CAE5676F1D64FDA800D791DE /* CommentTableViewCell.xib */; };
 		CAE567721D64FE1B00D791DE /* CommentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE567711D64FE1B00D791DE /* CommentTableViewCell.swift */; };
 /* End PBXBuildFile section */
@@ -37,7 +37,7 @@
 		CAE567641D64F07F00D791DE /* VideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoTableViewCell.swift; sourceTree = "<group>"; };
 		CAE567661D64F61600D791DE /* UIColorExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtensions.swift; sourceTree = "<group>"; };
 		CAE5676B1D64FA0B00D791DE /* DetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailsViewController.xib; sourceTree = "<group>"; };
-		CAE5676D1D64FA5200D791DE /* UIViewControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtensions.swift; sourceTree = "<group>"; };
+		CAE5676D1D64FA5200D791DE /* NSObjectExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSObjectExtensions.swift; sourceTree = "<group>"; };
 		CAE5676F1D64FDA800D791DE /* CommentTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CommentTableViewCell.xib; sourceTree = "<group>"; };
 		CAE567711D64FE1B00D791DE /* CommentTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -125,7 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				CAE567661D64F61600D791DE /* UIColorExtensions.swift */,
-				CAE5676D1D64FA5200D791DE /* UIViewControllerExtensions.swift */,
+				CAE5676D1D64FA5200D791DE /* NSObjectExtensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -216,7 +216,7 @@
 			files = (
 				CA26F9531D63FA7A00765AD1 /* Utility.swift in Sources */,
 				CAE567671D64F61600D791DE /* UIColorExtensions.swift in Sources */,
-				CAE5676E1D64FA5200D791DE /* UIViewControllerExtensions.swift in Sources */,
+				CAE5676E1D64FA5200D791DE /* NSObjectExtensions.swift in Sources */,
 				CA4E933D1D62BF9100A66FE3 /* ContainerViewController.swift in Sources */,
 				CAE567721D64FE1B00D791DE /* CommentTableViewCell.swift in Sources */,
 				CA4E933B1D62BF9100A66FE3 /* AppDelegate.swift in Sources */,

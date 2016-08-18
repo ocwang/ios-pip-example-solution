@@ -18,9 +18,7 @@ extension NSObject {
         
         return classString
     }
-}
-
-extension UIResponder {
+    
     class func pip_nibNamed(nibName: String) -> UINib {
         return UINib(nibName: nibName, bundle: Bundle.main)
     }
@@ -29,7 +27,7 @@ extension UIResponder {
         return pip_nibNamed(nibName: self.toString())
     }
     
-    class func pip_instantiateWithNibNamed(nibName: String) -> AnyObject {
+    class func pip_instantiateWithNibNamed<T>(nibName: String) -> T {
         let nib = pip_nibNamed(nibName: nibName)
         let objects = nib.instantiate(withOwner: nil, options: nil)
         
@@ -37,10 +35,10 @@ extension UIResponder {
             fatalError("Error: couldn't create nib named \(nibName)")
         }
         
-        return object as AnyObject
+        return object as! T
     }
     
-    class func pip_instantiateFromNib() -> AnyObject {
+    class func pip_instantiateFromNib<T>() -> T {
         return pip_instantiateWithNibNamed(nibName: self.toString())
     }
 }
