@@ -14,7 +14,7 @@ extension NSObject {
         let components = name.components(separatedBy: ".")
         
         guard let classString = components.last
-            else { fatalError("") }
+            else { fatalError("Error: couldn't convert class name to string.") }
         
         return classString
     }

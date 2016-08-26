@@ -27,7 +27,7 @@
                                         <rect key="frame" x="0.0" y="28" width="320" height="216"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="8Pt-Va-rSP" id="vzh-qZ-ZGI">
-                                            <frame key="frameInset" width="320" height="215"/>
+                                            <frame key="frameInset" width="320" height="216"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bL8-gq-rF1" userLabel="Video Preview">

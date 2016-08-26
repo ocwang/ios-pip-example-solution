@@ -16,7 +16,7 @@ extension UIColor {
      *
      */
     
-    convenience init(hex: Int) {
+    private convenience init(hex: Int) {
         let components = (
             R: CGFloat((hex >> 16) & 0xff) / 255,
             G: CGFloat((hex >> 08) & 0xff) / 255,
@@ -26,10 +26,10 @@ extension UIColor {
         self.init(red: components.R, green: components.G, blue: components.B, alpha: 1)
     }
     
-    // MARK: Brand Colors
+    // MARK: Project Colors
     
     static var pip_darkGray: UIColor {
-        return UIColor(hex: 0x999999)
+        return UIColor(hex: 0x666666)
     }
     
     static var pip_gray: UIColor {
@@ -40,11 +40,11 @@ extension UIColor {
         return UIColor(hex: 0xE6E6E6)
     }
     
-    static var pip_offWhite: UIColor {
-        return UIColor(hex: 0xF7F7F7)
-    }
-    
     static var pip_offBlack: UIColor {
         return UIColor(hex: 0x444444)
+    }
+    
+    static var pip_offWhite: UIColor {
+        return UIColor(hex: 0xF7F7F7)
     }
 }
