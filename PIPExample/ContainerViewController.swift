@@ -56,7 +56,7 @@ class ContainerViewController: UIViewController {
     
     func presentVideo() {
         removeExistingViewControllerIfNeeded()
-        
+
         addVideoViewController()
         addDetailsViewController()
         
@@ -76,49 +76,9 @@ class ContainerViewController: UIViewController {
         }
     }
     
-    func addVideoViewController() {
-        videoViewController = VideoViewController()
-        addChildViewController(videoViewController)
-        
-        let videoView = videoViewController.view!
-        videoView.translatesAutoresizingMaskIntoConstraints = false
-        videoView.addGestureRecognizer(panGesture)
-        
-        view.addSubview(videoView)
-        
-        videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio).isActive = true
-        
-        videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: view.bounds.width)
-        videoWidthConstraint.isActive = true
-        
-        videoTopConstraint = videoView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.maxY)
-        videoTopConstraint.isActive = true
-        
-        videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
-        videoLeadingConstraint.isActive = true
-    }
     
-    func addDetailsViewController() {
-        detailsViewController = DetailsViewController.pip_instantiateFromNib()
-        addChildViewController(detailsViewController)
-        
-        let detailsView = detailsViewController.view!
-        detailsView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(detailsView)
-        
-        let width = view.bounds.width
-        detailsView.widthAnchor.constraint(equalToConstant: width).isActive = true
-        
-        let videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
-        let detailsViewHeight = view.bounds.height - videoHeight
-        detailsView.heightAnchor.constraint(equalToConstant: detailsViewHeight).isActive = true
-        
-        detailsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: view.bounds.minX).isActive = true
-        
-        detailsViewTopConstraint = detailsView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.bounds.maxY)
-        detailsViewTopConstraint.isActive = true
-    }
+    
+    
     
     func removeExistingViewControllerIfNeeded() {
         guard let videoViewController = videoViewController,
@@ -219,6 +179,58 @@ class ContainerViewController: UIViewController {
         UIView.animate(withDuration: 0.3,
                        animations: { self.view.layoutIfNeeded() },
                        completion: completionHandler)
+    }
+}
+
+// MARK: - Handle Child Views
+
+extension ContainerViewController {
+    func addVideoViewController() {
+        videoViewController = VideoViewController()
+        
+        add(childViewController: videoViewController, constraints: { [unowned self] (videoView: UIView) in
+            videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio).isActive = true
+            
+            self.videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: videoView.bounds.width)
+            self.videoWidthConstraint.isActive = true
+            
+            self.videoTopConstraint = videoView.topAnchor.constraint(equalTo: videoView.topAnchor, constant: videoView.bounds.maxY)
+            self.videoTopConstraint.isActive = true
+            
+            self.videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: videoView.leadingAnchor)
+            self.videoLeadingConstraint.isActive = true
+        }) { [unowned self] (viewController: UIViewController) in
+            viewController.view.addGestureRecognizer(self.panGesture)
+        }
+    }
+    
+    func addDetailsViewController() {
+        detailsViewController = DetailsViewController.pip_instantiateFromNib()
+        
+        add(childViewController: detailsViewController, constraints: { [unowned self] (detailsView) in
+            let width = self.view.bounds.width
+            detailsView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            
+            let videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
+            let detailsViewHeight = self.view.bounds.height - videoHeight
+            detailsView.heightAnchor.constraint(equalToConstant: detailsViewHeight).isActive = true
+            
+            detailsView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: self.view.bounds.minX).isActive = true
+            
+            self.detailsViewTopConstraint = detailsView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.maxY)
+            self.detailsViewTopConstraint.isActive = true
+        })
+    }
+    
+    func add(childViewController viewController: UIViewController, constraints: ((UIView) -> Void)?, completionHandler: ((UIViewController) -> Void)? = nil) {
+        addChildViewController(viewController)
+        
+        let childViewControllerView = viewController.view!
+        childViewControllerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(childViewControllerView)
+        
+        constraints?(childViewControllerView)
+        completionHandler?(viewController)
     }
 }
 
