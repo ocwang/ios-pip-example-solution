@@ -10,15 +10,12 @@ import UIKit
 
 class ContainerViewController: UIViewController {
 
-    enum VideoPosition: Int {
-        case top = 0, bottomRight
+    enum VideoPosition {
+        case top
+        case bottomRight
     }
     
     // MARK: - Instance Vars
-    
-    let baseWidthRatio: CGFloat = 0.4
-    
-    let bottomPadding: CGFloat = 10
     
     lazy var panGesture: UIPanGestureRecognizer = {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handle(panGesture:)))
@@ -32,6 +29,8 @@ class ContainerViewController: UIViewController {
                        "The 28 Illest Puns From Politicians in 2013",
                        "The 22 Greatest Snapchat Filters From LOST"]
     
+    // MARK: - Constraints
+    
     var videoWidthConstraint: NSLayoutConstraint!
     var videoTopConstraint: NSLayoutConstraint!
     var videoLeadingConstraint: NSLayoutConstraint!
@@ -40,16 +39,15 @@ class ContainerViewController: UIViewController {
     // MARK: - Subviews
     
     @IBOutlet weak var tableView: UITableView!
-    
     var videoViewController: VideoViewController!
-    
     var detailsViewController: DetailsViewController!
-    
-    // MARK: - Show/Hide Child VCs
-    
+}
+
+// MARK: - Present/Hide Video
+
+extension ContainerViewController {
     func presentVideo() {
         removeExistingViewControllerIfNeeded()
-
         addVideoViewController()
         addDetailsViewController()
         
@@ -62,7 +60,6 @@ class ContainerViewController: UIViewController {
         let presentAnimation = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
             self.view.layoutIfNeeded()
         }
-        
         presentAnimation.addCompletion { (position) in
             if position == .end {
                 self.videoViewController.didMove(toParentViewController: self)
@@ -78,53 +75,15 @@ class ContainerViewController: UIViewController {
         
         UIViewPropertyAnimator(duration: 0.2, curve: UIViewAnimationCurve.easeInOut) {
             self.detailsViewController.view.alpha = 1
-        }.startAnimation()
+            }.startAnimation()
     }
     
     func hideVideoDetails() {
         detailsViewController.view.isHidden = true
         detailsViewController.view.alpha = 0
     }
-
-    // MARK: - Pan Gesture
     
-    func handle(panGesture sender: UIPanGestureRecognizer) {
-        guard let panView = panGesture.view else { return }
-        
-        let translatedPoint = sender.translation(in: view)
-        
-        if panGesture.state == .began || panGesture.state == .changed {
-            hideVideoDetails()
-
-            translate(panView: panView, withTranslatedPoint: translatedPoint)
-            panGesture.setTranslation(.zero, in: view)
-        } else if panGesture.state == .ended {
-            let currentCenterY = panView.center.y + translatedPoint.y
-            let yThreshold = view.bounds.height * 0.4
-            
-            let finalPosition: VideoPosition = currentCenterY <= yThreshold ? .top : .bottomRight
-            animateVideo(toPosition: finalPosition)
-        }
-    }
-    
-    func translate(panView: UIView, withTranslatedPoint translatedPoint: CGPoint) {
-        let width = view.bounds.width
-        let baseWidth = width * baseWidthRatio
-        let topDistance = (panView.center.y + translatedPoint.y) - (Utility.heightWithDesiredRatio(forWidth: baseWidth)/2)
-        let topDistanceRatio = 1 - (topDistance/(view.frame.height - Utility.heightWithDesiredRatio(forWidth: baseWidth)))
-        
-        let currentWidth = baseWidth + ((width/2) * topDistanceRatio)
-        let currentHeight = Utility.heightWithDesiredRatio(forWidth: currentWidth)
-        let currentX = (panView.center.x + translatedPoint.x) - (currentWidth/2)
-        let currentY = (panView.center.y + translatedPoint.y) - (currentHeight/2)
-        
-        videoLeadingConstraint.constant = currentX
-        videoTopConstraint.constant = currentY
-        videoWidthConstraint.constant = currentWidth
-        
-        view.setNeedsUpdateConstraints()
-        view.layoutIfNeeded()
-    }
+    // MARK: Animate Video to Top/Bottom Position
     
     func animateVideo(toPosition position: VideoPosition) {
         let animation = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
@@ -146,10 +105,11 @@ class ContainerViewController: UIViewController {
             }
             
         case .bottomRight:
-            let bottomWidth: CGFloat = width * baseWidthRatio
+            let videoPadding = VideoViewController.padding
+            let bottomWidth: CGFloat = width * VideoViewController.baseWidthRatio
             let videoHeight = Utility.heightWithDesiredRatio(forWidth: bottomWidth)
-            let bottomX = width - bottomPadding - bottomWidth
-            let bottomY = view.frame.height - bottomPadding - videoHeight
+            let bottomX = width - videoPadding - bottomWidth
+            let bottomY = view.frame.height - videoPadding - videoHeight
             
             videoLeadingConstraint.constant = bottomX
             videoTopConstraint.constant = bottomY
@@ -158,6 +118,48 @@ class ContainerViewController: UIViewController {
         
         view.setNeedsUpdateConstraints()
         animation.startAnimation()
+    }
+}
+
+// MARK: - Handle Pan Gesture
+
+extension ContainerViewController {
+    func handle(panGesture sender: UIPanGestureRecognizer) {
+        guard let panView = panGesture.view else { return }
+        
+        let translatedPoint = sender.translation(in: view)
+        
+        if panGesture.state == .began || panGesture.state == .changed {
+            hideVideoDetails()
+            
+            translate(panView: panView, withTranslatedPoint: translatedPoint)
+            panGesture.setTranslation(.zero, in: view)
+        } else if panGesture.state == .ended {
+            let currentCenterY = panView.center.y + translatedPoint.y
+            let yThreshold = view.bounds.height * 0.4
+            
+            let finalPosition: VideoPosition = currentCenterY <= yThreshold ? .top : .bottomRight
+            animateVideo(toPosition: finalPosition)
+        }
+    }
+    
+    func translate(panView: UIView, withTranslatedPoint translatedPoint: CGPoint) {
+        let width = view.bounds.width
+        let baseWidth = width * VideoViewController.baseWidthRatio
+        let topDistance = (panView.center.y + translatedPoint.y) - (Utility.heightWithDesiredRatio(forWidth: baseWidth)/2)
+        let topDistanceRatio = 1 - (topDistance/(view.frame.height - Utility.heightWithDesiredRatio(forWidth: baseWidth)))
+        
+        let currentWidth = baseWidth + ((width/2) * topDistanceRatio)
+        let currentHeight = Utility.heightWithDesiredRatio(forWidth: currentWidth)
+        let currentX = (panView.center.x + translatedPoint.x) - (currentWidth / 2)
+        let currentY = (panView.center.y + translatedPoint.y) - (currentHeight / 2)
+        
+        videoLeadingConstraint.constant = currentX
+        videoTopConstraint.constant = currentY
+        videoWidthConstraint.constant = currentWidth
+        
+        view.setNeedsUpdateConstraints()
+        view.layoutIfNeeded()
     }
 }
 

@@ -9,6 +9,13 @@
 import UIKit
 
 class VideoViewController: UIViewController {
+    
+    // MARK: - Class Vars
+    static let padding: CGFloat = 10
+    static let baseWidthRatio: CGFloat = 0.4
+    
+    // MARK: - VC Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
