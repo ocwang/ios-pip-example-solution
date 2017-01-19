@@ -44,15 +44,8 @@ class ContainerViewController: UIViewController {
     var videoViewController: VideoViewController!
     
     var detailsViewController: DetailsViewController!
-
-    // MARK: - VC Lifecycle
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
     
     // MARK: - Show/Hide Child VCs
-    
     
     func presentVideo() {
         removeExistingViewControllerIfNeeded()
@@ -66,48 +59,33 @@ class ContainerViewController: UIViewController {
         let videoHeight = Utility.heightWithDesiredRatio(forWidth: view.bounds.width)
         detailsViewTopConstraint.constant = videoHeight
         
-        UIView.animate(withDuration: 0.3, animations: {
+        let presentAnimation = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
             self.view.layoutIfNeeded()
-        }) {
-            if $0 {
+        }
+        
+        presentAnimation.addCompletion { (position) in
+            if position == .end {
                 self.videoViewController.didMove(toParentViewController: self)
                 self.detailsViewController.didMove(toParentViewController: self)
             }
         }
-    }
-    
-    
-    
-    
-    
-    func removeExistingViewControllerIfNeeded() {
-        guard let videoViewController = videoViewController,
-            let detailsViewController = detailsViewController
-            else { return }
         
-        remove(viewController: videoViewController)
-        remove(viewController: detailsViewController)
+        presentAnimation.startAnimation()
     }
     
     func showVideoDetails() {
         detailsViewController.view.isHidden = false
         
-        UIView.animate(withDuration: 0.2, animations: {
+        UIViewPropertyAnimator(duration: 0.2, curve: UIViewAnimationCurve.easeInOut) {
             self.detailsViewController.view.alpha = 1
-        })
+        }.startAnimation()
     }
     
     func hideVideoDetails() {
         detailsViewController.view.isHidden = true
         detailsViewController.view.alpha = 0
     }
-    
-    func remove(viewController vc: UIViewController) {
-        vc.willMove(toParentViewController: nil)
-        vc.view.removeFromSuperview()
-        vc.removeFromParentViewController()
-    }
-    
+
     // MARK: - Pan Gesture
     
     func handle(panGesture sender: UIPanGestureRecognizer) {
@@ -149,8 +127,11 @@ class ContainerViewController: UIViewController {
     }
     
     func animateVideo(toPosition position: VideoPosition) {
+        let animation = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
+            self.view.layoutIfNeeded()
+        }
+        
         let width = view.bounds.width
-        var completionHandler: ((Bool) -> Void)?
         
         switch position {
         case .top:
@@ -158,9 +139,12 @@ class ContainerViewController: UIViewController {
             videoTopConstraint.constant = 0
             videoWidthConstraint.constant = width
             
-            completionHandler = {
-                if $0 { self.showVideoDetails() }
+            animation.addCompletion { (position) in
+                if position == .end {
+                    self.showVideoDetails()
+                }
             }
+            
         case .bottomRight:
             let bottomWidth: CGFloat = width * baseWidthRatio
             let videoHeight = Utility.heightWithDesiredRatio(forWidth: bottomWidth)
@@ -170,34 +154,32 @@ class ContainerViewController: UIViewController {
             videoLeadingConstraint.constant = bottomX
             videoTopConstraint.constant = bottomY
             videoWidthConstraint.constant = bottomWidth
-            
-            completionHandler = nil
         }
         
         view.setNeedsUpdateConstraints()
-        
-        UIView.animate(withDuration: 0.3,
-                       animations: { self.view.layoutIfNeeded() },
-                       completion: completionHandler)
+        animation.startAnimation()
     }
 }
 
-// MARK: - Handle Child Views
+// MARK: - Add/Remove Child View Controllers
 
 extension ContainerViewController {
+    
+    // MARK: Add
+    
     func addVideoViewController() {
         videoViewController = VideoViewController()
         
         add(childViewController: videoViewController, constraints: { [unowned self] (videoView: UIView) in
             videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio).isActive = true
             
-            self.videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: videoView.bounds.width)
+            self.videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: self.view.bounds.width)
             self.videoWidthConstraint.isActive = true
             
-            self.videoTopConstraint = videoView.topAnchor.constraint(equalTo: videoView.topAnchor, constant: videoView.bounds.maxY)
+            self.videoTopConstraint = videoView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.maxY)
             self.videoTopConstraint.isActive = true
             
-            self.videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: videoView.leadingAnchor)
+            self.videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor)
             self.videoLeadingConstraint.isActive = true
         }) { [unowned self] (viewController: UIViewController) in
             viewController.view.addGestureRecognizer(self.panGesture)
@@ -231,6 +213,23 @@ extension ContainerViewController {
         
         constraints?(childViewControllerView)
         completionHandler?(viewController)
+    }
+    
+    // MARK: Remove
+    
+    func removeExistingViewControllerIfNeeded() {
+        guard let videoViewController = videoViewController,
+            let detailsViewController = detailsViewController
+            else { return }
+        
+        remove(viewController: videoViewController)
+        remove(viewController: detailsViewController)
+    }
+    
+    func remove(viewController vc: UIViewController) {
+        vc.willMove(toParentViewController: nil)
+        vc.view.removeFromSuperview()
+        vc.removeFromParentViewController()
     }
 }
 
