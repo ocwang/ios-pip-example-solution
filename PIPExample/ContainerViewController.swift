@@ -173,16 +173,15 @@ extension ContainerViewController {
         videoViewController = VideoViewController()
         
         add(childViewController: videoViewController, constraints: { [unowned self] (videoView: UIView) in
-            videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio).isActive = true
-            
             self.videoWidthConstraint = videoView.widthAnchor.constraint(equalToConstant: self.view.bounds.width)
-            self.videoWidthConstraint.isActive = true
-            
             self.videoTopConstraint = videoView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.maxY)
-            self.videoTopConstraint.isActive = true
-            
             self.videoLeadingConstraint = videoView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor)
-            self.videoLeadingConstraint.isActive = true
+            
+            NSLayoutConstraint.activate([ videoView.widthAnchor.constraint(equalTo: videoView.heightAnchor, multiplier: Utility.widthToHeightRatio),
+                self.videoWidthConstraint,
+                self.videoTopConstraint,
+                self.videoLeadingConstraint])
+            
         }) { [unowned self] (viewController: UIViewController) in
             viewController.view.addGestureRecognizer(self.panGesture)
         }
@@ -193,16 +192,14 @@ extension ContainerViewController {
         
         add(childViewController: detailsViewController, constraints: { [unowned self] (detailsView) in
             let width = self.view.bounds.width
-            detailsView.widthAnchor.constraint(equalToConstant: width).isActive = true
-            
             let videoHeight = Utility.heightWithDesiredRatio(forWidth: width)
             let detailsViewHeight = self.view.bounds.height - videoHeight
-            detailsView.heightAnchor.constraint(equalToConstant: detailsViewHeight).isActive = true
-            
-            detailsView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: self.view.bounds.minX).isActive = true
-            
             self.detailsViewTopConstraint = detailsView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: self.view.bounds.maxY)
-            self.detailsViewTopConstraint.isActive = true
+            
+            NSLayoutConstraint.activate([detailsView.widthAnchor.constraint(equalToConstant: width),
+                detailsView.heightAnchor.constraint(equalToConstant: detailsViewHeight),
+                detailsView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: self.view.bounds.minX),
+                self.detailsViewTopConstraint])
         })
     }
     
